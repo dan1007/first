@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>angularJs banner</title>
+    <script src="js/angularjs-1.3.9.js"></script>
+    <!--<script src="js/angular-animate-1.3.9.js"></script>-->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .banner {
+            margin: 0 auto;
+            width: 730px;
+            height: 454px;
+            position: relative;
+        }
+
+        .slidImgs a img {
+            position: absolute;
+            opacity: 0;
+            width: 730px;
+            height: 454px;
+        }
+
+        .slidImgs a .active {
+            opacity: 1;
+            transition: all 0.8s ease;
+        }
+
+        ul {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            margin-left: -90px;
+        }
+
+        ul li {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(62, 62, 62, .8);
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+            margin: 0 5px;
+            z-index: 9999;
+        }
+
+        ul li .active {
+            display: block;
+            border-radius: 50%;
+            background-color: darkred;
+        }
+
+        .sharp {
+            position: absolute;
+            width: 100%;
+            z-index: 9999;
+            top: 50%;
+            margin-top: -31px;
+        }
+
+        .sharp .left, .sharp .right {
+            background-color: rgba(0, 0, 0, .2);
+            /*width: 28px;*/
+            /*height: 62px;*/
+            padding: 18px 7px;
+            font-size: 22px;
+        }
+
+        .sharp .left {
+            float: left;
+        }
+
+        .sharp .right {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="banner" ng-app="app" ng-controller="ctrl" ng-mouseover="stopPlay($event)" ng-mouseout="autoPlay($event)">
+        <div class="slidImgs">
+            <a ng-repeat="i in imglist" href="#">
+                <img ng-class="{true:'active'}[$index==num]" src="{{i.src}}"/>
+            </a>
+        </div>
+        <ul>
+            <li ng-repeat="i in imglist track by $index" ng-mouseover="showImg($index)">
+                <a href="#" ng-class="{true:'active'}[$index==num]">{{$index+1}}</a>
+            </li>
+        </ul>
+        <div class="sharp">
+            <a class="left" href="#" ng-click="prev($event)">&lt;</a>
+            <a class="right" href="#" ng-click="next($event)">&gt;</a>
+        </div>
+    </div>
+</div>
+<script>
+    angular.module("app", [])
+            .controller("ctrl", function ($scope, $interval,$timeout) {
+                var imgs = [
+                    {src: "img/img1.jpg", alt: "第一张图片"},
+                    {src: "img/img2.jpg", alt: "第二张图片"},
+                    {src: "img/img3.jpg", alt: "第三张图片"},
+                    {src: "img/img4.jpg", alt: "第四张图片"},
+                    {src: "img/img5.jpg", alt: "第五张图片"},
+                    {src: "img/img6.jpg", alt: "第六张图片"}];
+                $scope.imglist = imgs;
+                var timer;
+                var t;
+                $scope.num = 0;
+                $scope.showImg = function (i) {
+                    t=$timeout(function(){
+                        $scope.num = i;
+                    },300);
+                };
+
+                $scope.autoPlay = function (e) {
+                    timer = $interval(function () {
+                        $scope.num = $scope.num >= 5 ? 0 : $scope.num + 1;
+                    }, 1500);
+                    $timeout.cancel(t);//鼠标在li上随意滑动时图片不会闪烁
+                };
+                $scope.autoPlay();
+                $scope.stopPlay = function (e) {
+                    $interval.cancel(timer);
+                };
+                $scope.prev = function (e) {
+                    $scope.num = $scope.num < 1 ? 5 : $scope.num - 1;
+                };
+                $scope.next = function (e) {
+                    $scope.num = $scope.num >= 5 ? 0 : $scope.num + 1;
+                }
+            })
+</script>
+</body>
+</html>

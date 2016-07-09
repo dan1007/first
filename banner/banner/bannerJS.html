@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .banner {
+            width: 500px;
+            height: 400px;
+            /*overflow:hidden;*/
+            margin:20px auto;
+            position: relative;
+        }
+
+        .banner-info {
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            opacity: 0.3;
+            background-color: rgba(0,0,0,.4);
+            bottom: 0;
+            z-index: 9999;
+            color: #fff;
+            font-weight:bold;
+            text-align:center;
+            line-height:30px;
+        }
+
+        .banner ul {
+            position: absolute;
+            bottom: 30px;
+            z-index: 10000;
+            left:50%;
+            margin-left:-84px;
+        }
+
+        .banner ul li {
+            list-style: none;
+            float: left;
+            /*display:inline-block;*/
+            width: 22px;
+            height: 22px;
+            background-color: #666;
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            margin: 0 3px;
+        }
+
+        .banner ul .selected {
+            background-color: darkred;
+        }
+
+        .banner .banner-list a {
+            position: absolute;
+        }
+        .banner .banner-list a img{
+            width:500px;
+            height:400px;
+        }
+        .banner .lrnav {
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            margin-top:-24px;
+            z-index: 9999;
+            display: none;
+        }
+
+        .banner .lrnav .left, .banner .lrnav .right {
+            background-color:rgba(0,0,0,.3);
+            font-size:20px;
+            color:#fff;
+            padding: 14px 5px;
+        }
+
+        .banner .lrnav .left {
+            float: left;
+        }
+
+        .banner .lrnav .right {
+            float: right;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="banner" id="banner">
+        <div class="banner-bg"></div>
+        <div class="banner-info" id="banner_info"></div>
+        <ul>
+            <li class="selected">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+        </ul>
+        <div class="banner-list" id="banner_list">
+            <a><img src="imgs/img1.jpg" alt="第一张图片" title=""/></a>
+            <a><img src="imgs/img2.jpg" alt="第二张图片" title=""/></a>
+            <a><img src="imgs/img3.jpg" alt="第三张图片" title=""/></a>
+            <a><img src="imgs/img4.jpg" alt="第四张图片" title=""/></a>
+            <a><img src="imgs/img5.jpg" alt="第五张图片" title=""/></a>
+            <a><img src="imgs/img6.jpg" alt="第六张图片" title=""/></a>
+        </div>
+
+        <div class="lrnav" id="lrnav">
+            <a class="glyphicon glyphicon-chevron-left left" id="left"></a>
+            <a class="glyphicon glyphicon-chevron-right right" id="right"></a>
+        </div>
+    </div>
+</div>
+<script>
+    var count = 0, n = 0, t = 0;
+    var timer;
+    /* 封装代码用的
+     function getID(id){
+     return document.getElementById(id);
+     }*/
+    var myli = document.getElementById("banner").getElementsByTagName("li");//获取li标签的对象
+
+    window.onload = function () {
+        count = document.getElementById("banner_list").getElementsByTagName("a");////获取当前轮播的长度
+        init();//把非第一张图全部隐藏
+        var bannerInfo = document.getElementById("banner_info");//获取bannerInfo对象
+//        console.log(bannerInfo);
+        bannerInfo.innerHTML = count[0].firstChild.getAttribute("alt");//放置一行内容
+        for (var i = 0; i < myli.length; i++) {
+            myli[i].value=i;
+            myli[i].onmouseover=function(){
+                var that=this;
+                timer=setTimeout(function(){
+                    var liIndex=that.innerHTML-1;//第一li：0  第二li：
+                    n=liIndex;//如果用户有点击了，注意，一定要更换当前n的值
+                    if (liIndex < count.length) {
+                        bannerInfo.innerHTML = count[liIndex].firstChild.getAttribute("alt");//更换底部导航栏的内容
+                        for (var j = 0; j < count.length; j++) {
+                            count[j].style.opacity = 0;//完全透明
+                            count[j].style.zIndex="9997";
+                            myli[j].className = "";
+                        }
+                        count[liIndex].style.opacity = 1;//完全不透明
+                        count[liIndex].style.transition="opacity .8s";
+                        count[liIndex].style.zIndex="9998";
+                        that.className = "selected";
+
+                    }
+
+                },200)
+            };
+            myli[i].onmouseout=function(){
+                clearTimeout(timer);//当鼠标在li上随意滑动时，页面不会模糊
+            }
+
+
+        }
+        //----------------------------------------------
+//        t = setInterval("autoPlay()", 2000);
+        var banner = document.getElementById("banner");
+//        console.log(banner);
+        var lrNav = document.getElementById("lrnav");
+        var left = document.getElementById("left");
+        var right = document.getElementById("right");
+        banner.onmouseover = function () {
+            lrNav.style.display = "block";//< >鼠标浮上时出现
+            clearInterval(t);
+        };
+        banner.onmouseout = function () {
+            lrNav.style.display = "none";//< >鼠标移出时隐藏
+            t = setInterval("autoPlay()", 2000);//当鼠标移出时，每隔2秒执行一次自动播放
+        };
+        left.onclick = function () {
+            if (n > 0) {
+                n--;
+            } else if (n == 0) {
+                n = count.length - 1;
+            }
+            myli[n].onmouseover();
+        };
+        right.onclick = function () {
+            n = n >= (count.length - 1) ? 0 : ++n;//一定要加（）
+            myli[n].onmouseover();
+        }
+    };
+    //---------------------------------------------
+    /*让显示的第一张不是html里的最后一张
+     * 第一种：改变dom节点的状态  不断的改变透明度
+     * 第二种：css3动画.横向平铺改变left，right值
+     * */
+    function setOpacity(ele, level) {
+        ele.style.opacity = level / 10;
+    }
+    //初始化：显示第一张图片
+    function init() {
+        for (var i = 0; i < count.length; i++) {
+            if (i != 0) {
+                setOpacity(count[i], 0);
+            }
+        }
+    }
+    //-------------------------------------------------
+    function autoPlay() {//自动播放
+        n = n >= (count.length - 1) ? 0 : ++n;
+        myli[n].onmouseover();
+
+    }
+
+    function fadeIn(ele) {
+        for (var i = 0; i <= 20; i++) {
+            (function () {
+                var pos = i * 5;
+                setTimeout(function () {
+                    setOpacity(ele, pos);
+                }, i * 25);
+            })()
+        }
+    }
+
+</script>
+</body>
+</html>
